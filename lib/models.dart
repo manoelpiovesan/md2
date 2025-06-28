@@ -5,7 +5,11 @@ class Vertex {
   Offset position;
   VertexState state;
 
-  Vertex({required this.id, required this.position, this.state = VertexState.normal});
+  Vertex({
+    required this.id,
+    required this.position,
+    this.state = VertexState.normal,
+  });
 }
 
 enum VertexState { normal, visited, waiting, finished }
@@ -18,7 +22,14 @@ class Edge {
   double? weight;
   bool directed;
   EdgeState state;
-  Edge({required this.from, required this.to, this.weight, this.directed = false, this.state = EdgeState.normal});
+
+  Edge({
+    required this.from,
+    required this.to,
+    this.weight,
+    this.directed = false,
+    this.state = EdgeState.normal,
+  });
 }
 
 class Graph {
@@ -44,7 +55,9 @@ class Graph {
   }
 
   void addEdge(int from, int to, {double? weight}) {
-    if (!edges.any((e) => e.from == from && e.to == to && e.directed == directed)) {
+    if (!edges.any(
+      (e) => e.from == from && e.to == to && e.directed == directed,
+    )) {
       edges.add(Edge(from: from, to: to, weight: weight, directed: directed));
     }
   }
@@ -69,7 +82,8 @@ class Graph {
     while (queue.isNotEmpty) {
       final v = queue.removeAt(0);
       visited.add(v);
-      final neighbors = edges.where((e) => e.from == v).map((e) => e.to).toList();
+      final neighbors =
+          edges.where((e) => e.from == v).map((e) => e.to).toList();
       if (!directed) {
         neighbors.addAll(edges.where((e) => e.to == v).map((e) => e.from));
       }
@@ -93,7 +107,8 @@ class Graph {
       if (!seen.contains(v)) {
         visited.add(v);
         seen.add(v);
-        final neighbors = edges.where((e) => e.from == v).map((e) => e.to).toList();
+        final neighbors =
+            edges.where((e) => e.from == v).map((e) => e.to).toList();
         if (!directed) {
           neighbors.addAll(edges.where((e) => e.to == v).map((e) => e.from));
         }
@@ -127,7 +142,18 @@ class Graph {
       visited.add(u);
       final neighbors = edges.where((e) => e.from == u).toList();
       if (!directed) {
-        neighbors.addAll(edges.where((e) => e.to == u).map((e) => Edge(from: e.to, to: e.from, weight: e.weight, directed: e.directed)));
+        neighbors.addAll(
+          edges
+              .where((e) => e.to == u)
+              .map(
+                (e) => Edge(
+                  from: e.to,
+                  to: e.from,
+                  weight: e.weight,
+                  directed: e.directed,
+                ),
+              ),
+        );
       }
       for (final e in neighbors) {
         final alt = dist[u]! + (e.weight ?? 1.0);
@@ -146,7 +172,9 @@ class Graph {
     void dfs(int v, int parent, List<int> path) {
       visited.add(v);
       path.add(v);
-      for (final e in edges.where((e) => e.from == v || (!directed && e.to == v))) {
+      for (final e in edges.where(
+        (e) => e.from == v || (!directed && e.to == v),
+      )) {
         int u = e.from == v ? e.to : e.from;
         if (u == parent) continue;
         if (path.contains(u)) {
@@ -158,6 +186,7 @@ class Graph {
         }
       }
     }
+
     for (final v in vertices) {
       if (!visited.contains(v.id)) {
         dfs(v.id, -1, []);

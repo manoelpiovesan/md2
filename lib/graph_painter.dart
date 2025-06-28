@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'models.dart';
 
+/// Responsável por desenhar o grafo na tela, incluindo vértices, arestas e destaques.
 class GraphPainter extends CustomPainter {
+  /// Grafo a ser desenhado.
   final Graph graph;
+  /// Raio dos vértices.
   final double vertexRadius;
+  /// Id do vértice selecionado, se houver.
   final int? selectedVertexId;
 
+  /// Cria um GraphPainter para desenhar o grafo.
   GraphPainter({required this.graph, this.vertexRadius = 24, this.selectedVertexId});
 
   @override
@@ -15,21 +20,19 @@ class GraphPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
 
-    // Desenhar arestas
     for (final edge in graph.edges) {
       final from = graph.vertices.firstWhere((v) => v.id == edge.from);
       final to = graph.vertices.firstWhere((v) => v.id == edge.to);
       final isPath = edge.state == EdgeState.path;
       final edgeColor = isPath
-          ? Colors.orangeAccent.shade200 // destaque para caminho
-          : Colors.orange.shade400; // cor sóbria, flat e visível para tema escuro
+          ? Colors.orangeAccent.shade200
+          : Colors.orange.shade400;
       final edgeWidth = isPath ? 6.0 : 2.5;
       final edgePaintPath = Paint()
         ..color = edgeColor
         ..strokeWidth = edgeWidth
         ..style = PaintingStyle.stroke;
       canvas.drawLine(from.position, to.position, edgePaintPath);
-      // Desenhar peso, se houver
       if (edge.weight != null) {
         final mid = Offset(
           (from.position.dx + to.position.dx) / 2,
@@ -49,7 +52,6 @@ class GraphPainter extends CustomPainter {
           mid - Offset(textPainter.width / 2, textPainter.height / 2),
         );
       }
-      // Desenhar seta se direcionado
       if (edge.directed) {
         final dir = (to.position - from.position).direction;
         final arrowLen = 16.0;
@@ -61,7 +63,6 @@ class GraphPainter extends CustomPainter {
       }
     }
 
-    // Desenhar vértices
     for (final vertex in graph.vertices) {
       Color color;
       if (vertex.id == selectedVertexId) {
@@ -78,12 +79,11 @@ class GraphPainter extends CustomPainter {
             color = Colors.lightBlueAccent.shade200;
             break;
           default:
-            color = Colors.blueGrey.shade200; // cor clara e sóbria para fundo escuro
+            color = Colors.blueGrey.shade200;
         }
       }
       final paint = Paint()..color = color;
       canvas.drawCircle(vertex.position, vertexRadius, paint);
-      // Desenhar borda se selecionado
       if (vertex.id == selectedVertexId) {
         final borderPaint = Paint()
           ..color = Colors.red
@@ -91,7 +91,6 @@ class GraphPainter extends CustomPainter {
           ..strokeWidth = 4;
         canvas.drawCircle(vertex.position, vertexRadius + 3, borderPaint);
       }
-      // Desenhar id
       textPainter.text = TextSpan(
         text: vertex.id.toString(),
         style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
